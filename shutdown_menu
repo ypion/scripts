@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+#########################################################
+###	Main parameters
+#########################################################
+LOCKSCRIPT="i3lock-fancy"
+rofi_options="-eh 1 -location 0 -width 30 -opacity 95 -bw 20 -hide-scrollbar"
+rofi_font="Awesome 35"
+rofi_text="!*******************!" #top filler text
+#########################################################
+###	Color theme
+#########################################################
+window_border="#073642"	# Big border ( if -border not null )
+item_border="#073642"	# Small borders around list items
+text_color="#2aa198"		# Font color
+hl_text_color="#111111"	# Highlighted item text color
+odd_bg_color="#073642"	# Odd item bacground 
+even_bg_color="#073642"	# Even item background
+hl_bg_color="#cb4b16"		# Highlighted item background
+cn="-color-normal $odd_bg_color,$text_color,$even_bg_color,$hl_bg_color,$hl_text_color"
+cw="-color-window $window_border,$item_border"
+color_theme="$cn $cw"
+#########################################################
+###	Menu items and commands
+#########################################################
+typeset -A menu
+menu=(
+  [  перезагрузка]="systemctl reboot"
+  [  выключить]="systemctl poweroff"
+  [   заблокировать]="$LOCKSCRIPT"
+  [ завершить сеанс]="i3-msg exit"
+#  [Hibernate]="systemctl hibernate"
+#  [Suspend]="systemctl suspend"
+#  [Halt]="systemctl halt"
+#  [Cancel]=""
+)
+#########################################################
+###	Processing
+#########################################################
+menu_nrows=${#menu[@]}
+selection="$(printf '%s\n' "${!menu[@]}" | sort | rofi -dmenu  -p $rofi_text  $rofi_options\
+ $color_theme -font "$rofi_font" )"
+i3-msg -q "exec ${menu[${selection}]}"
+
+#if [[ $? -eq 0 && ! -z ${selection} ]]; then
+ #   i3-msg -q "exec ${menu[${selection}]}"
+#fi
